@@ -45,6 +45,8 @@ function Scraper() {
     if (working)
       clearInterval(interval);  // Because of JS's EventLoop, it's guaranteed
                                 // that another function wouldn't be running.
+    else
+      return;
     working = false; interval = null;
     result.err.push('Stopped before finishing!');
     callback(result);
