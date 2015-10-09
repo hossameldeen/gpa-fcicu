@@ -34,7 +34,7 @@ function Scraper() {
     user = userParam; pass = passParam;
     DELAY = DELAYParam; callback = callbackParam;
     working = true;
-    interval = window.setInterval(sendRequest, DELAY);
+    interval = window.setInterval(sendRequest, DELAY), finalLogout = null;
     requestQ = [];
     result = {'err': []}; // May have more entries later.
     termsYearsCount = [];
@@ -47,6 +47,8 @@ function Scraper() {
                                 // that another function wouldn't be running.
     else
       return;
+    if (finalLogout != null)
+      clearTimeout(finalLogout);
     working = false; interval = null;
     result.err.push('Stopped before finishing!');
     callback(result);
@@ -54,14 +56,18 @@ function Scraper() {
 
   function endAllThis() {
     clearInterval(interval);
-    working = false; interval = null;
-    callback(result);
+    finalLogout = window.setTimeout(function() {
+      sendGET('http://my.fci.cu.edu.eg/logout.php', function(xhr) {
+        working = false; interval = null;
+        callback(result);
+      })
+    }, DELAY);
   }
 
   var user, pass, DELAY, callback;
   var that = this;
   var working = false,  // Same as interval != null
-      interval = null;
+      interval = null, finalLogout;
   var requestQ, result;
   var termsYearsCount, doneTermsYearsCount;
   function sendRequest() {
