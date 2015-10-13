@@ -1,0 +1,72 @@
+' The diagram uses PlantUML. A picture will always be saved with the same name.
+' Please note that this is a conceptual model, implementation may differ. For
+' example: I won't really create a class called Request, I'll just use objects.
+' Also, not reviewed yet.
+@startuml
+  Request <|-- GETRequest
+  Request <|-- POSTRequest
+  RequestRunner --> "0..*" Request : at any times contains
+  PhaseRunner --> "0..*" Phase : has
+  Phase --> PhaseState : has
+  abstract class Request {
+    +url:String
+    +handler:Function
+    +infoForHandler:String
+  }
+  class GETRequest {
+  }
+  class POSTRequest {
+    +nameValuePairs:Array[pairsCount][2]
+  }
+  class RequestRunner {
+    #delay:Number
+    #requestQ:Request[]
+    #interval:Interval
+    +RequestRunner(delay:Number)
+    +void changeDelay(delay:Number)
+    +void start()
+    +void pause()
+    +void emptyQueue()
+    +void addRequestToQueue(request:Request)
+    #applyRequest(request:Request)
+  }
+  abstract class Phase {
+    #prevResult:Result
+    #callback:Function(Result)
+    #state:PhaseState
+    #result:Result
+    +Phase(prevResult:Result)
+    +setCallback(callback:Function(Result))
+    +void start()
+    #void finish()
+  }
+  enum PhaseState {
+    +NotStartedYet
+    +Done
+  }
+  class PhaseRunner {
+    #phases:Phase[]
+    #someInput:Result
+' Should be Function(Result) but PlantUML would consider it a function
+    #callback:Function
+    #currentIndex:Int
+    +PhaseRunner(phases:Phase[], someInput:Result, callback:Function(Result))
+    +void start()
+    +void stopAndCallCallback()
+' Will be curried with index
+    #phaseCallback(index, Result)
+  }
+  note top of PhaseRunner : PhaseRunner is a Singleton. No impl. details here.
+  class Result {
+    +err:String[]
+  }
+  class Utilities {
+    +void sendGET(url:String, handler:Function, infoForHandler:Object)
+    +void sendPOST(url:String, nameValuePairs:Array[][2], handler:Function,
+              infoForHandler:Object)
+    +DOMObject parseHTML(anHTMLString:String)
+    +Bool/String checkUser(user:String, doc:DOMObject)
+    +Function curryOneParam(fn:Function, param:var)
+    #void initReq(url:String, handler:Function, infoForHandler:Object)
+  }
+@enduml

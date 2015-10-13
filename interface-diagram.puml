@@ -1,0 +1,40 @@
+' The diagram uses PlantUML. A picture will always be saved with the same name.
+' Interface diagram: i.e., a class diagram with only interfaces. My notation xD
+' Please note that this is a conceptual model, implementation may differ. For
+' example: I won't really create a class called Request, I'll just use objects.
+@startuml
+  Request <|-- GETRequest
+  Request <|-- POSTRequest
+  RequestRunner --> "0..*" Request : at any times contains
+  PhaseRunner --> "0..*" Phase : has
+  class Request {
+    +url:String
+    +handler:Function
+    +infoForHandler:String
+  }
+  class GETRequest {
+  }
+  class POSTRequest {
+    +nameValuePairs:Array[pairsCount][2]
+  }
+  interface RequestRunner {
+    +RequestRunner(delay:Number)
+    +void setDelay(delay:Number)
+    +void start()
+    +void pause()
+    +void emptyQueue()
+    +void addRequestToQueue(request:Request)
+  }
+  interface Phase {
+    +Phase(prevResult:Result, callback:Function(Result))
+    +void start()
+  }
+  interface PhaseRunner {
+    +PhaseRunner(phases:Phase[], someInput:Result, callback:Function(Result))
+    +void start()
+    +void stopAndCallCallback()
+  }
+  interface Result {
+    +err:String[]
+  }
+@enduml

@@ -14,8 +14,9 @@ Most of the code is about `XMLHttpRequest`, something not specifically related t
 - In some cases, you may not get logged out after the extension is done working.
 - I've done testing with different accounts and cases, but still I may have made a mistake here or there, so if I calculated it wrong and you suicided, I'm sorry!
 
-## Next Steps
-- Make good a good design. Perhaps even show the result and how it was calculated in a new tab.
-- See if you can
-- Perhaps, just perhaps, it could be
+## Next Steps isA
+- Review, implement and test the class diagram refactoring.
+- Add the periodic checking stuff with noob UI.
+- Add nice UI.
+- Either see if will publish or will extend it to the other project.
 - Edit README.
