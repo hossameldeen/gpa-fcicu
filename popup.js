@@ -1,19 +1,17 @@
-var scraper = new Scraper();
-
 function startCalculating() {
   document.getElementById('GPA').innerHTML = "";
-  scraper.stopAndCallCallback();
   document.getElementById('GPA').innerHTML = "Loading...";
-  scraper.start
+  scrape
     ( document.getElementById('user').value
     , document.getElementById('pass').value
-    , 1000
     , function(result) {
         document.getElementById('GPA').innerHTML = "";
-        if (result.err.length > 0)
+        if (result.err.length > 0) {
           document.getElementById('GPA').innerHTML
             = "<span>Failed! Contact hossameldeenfci@gmail.com</span><br/>"
             + "<span>Errors, probably not meaningful to you:</span><br/>";
+          console.log(err);
+        }
         else
           document.getElementById('GPA').innerHTML
             = "<span>GPA = " + calculateGPAFromResult(result) + "!</span>";
@@ -26,9 +24,7 @@ var points = {'A+': 4.0, 'A': 3.7, 'B+': 3.3, 'B': 3.0, 'C+': 2.7, 'C': 2.4,
 
 function calculateGPAFromResult(result) {
   var grades = {}; // You could fail a course, then take it again.
-  for (var key in result) {
-    if (key === 'err')
-      continue;
+  for (var key in result.gradeTables) {
     var arr = result[key];
     for (var i = 0; i < 3; ++i) {
       if (typeof arr[i] === 'undefined')

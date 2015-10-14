@@ -1,37 +1,31 @@
 // ============================================================================
 // XHR-related ================================================================
 
-function sendGET(url, handler, infoForHandler) {
-  var xhr = initReq(url, handler, infoForHandler);
+function sendGET(url, handler, info) {
+  var xhr = initReq(url, handler, info);
   xhr.open("GET", url, true);
   xhr.send();
 }
 
-function sendPOST(url, paramObject, handler, infoForHandler) {
-  var xhr = initReq(url, handler, infoForHandler);
-  var paramString = '';
-  var isFirst = true;
-  for (var key in paramObject) {
-    if (isFirst) {isFirst = false; paramString += '&'}
-    paramString += key + '=' + paramObject[key];
-  }
-  xhr['paramObject'] = paramObject;
+function sendPOST(url, paramString, handler, info) {
+  var xhr = initReq(url, handler, info);
+  xhr['paramString'] = paramString;
   xhr.open("POST", url, true);
   xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
   xhr.send(paramString);
 }
 
-function initReq(url, handler, infoForHandler) {
+function initReq(url, handler, info) {
   var xhr = new XMLHttpRequest();
   if (typeof handler != 'undefined')
     xhr.onreadystatechange = curryXHR(handler, xhr);
-  xhr.info = infoForHandler;  // Even if undefined, will work
-                                        // correctly, according to my tests.
+  xhr.info = info;  // Even if undefined, will work correctly, according to
+                    // my tests.
   return xhr;
 }
 
 // Not a generic curry!
-function curryOneParam(fn, param) {
+function curryXHR(fn, param) {
   return function() {fn(param)};
 }
 
@@ -40,18 +34,6 @@ function parseHTML(aHTMLString){
   if (typeof aHTMLString !== 'undefined' && aHTMLString !== null)
     return (new DOMParser()).parseFromString(aHTMLString, "text/html");
   return (new DOMParser()).parseFromString('', "text/html");
-}
-
-function handlerBase(xhr) {
-  if (xhr.readyState != 4)
-    return true;
-  var doc = parseHTML(xhr.responseText);
-  var state = checkUser(user, doc);
-  if (state !== true) {
-    result.err.push(state);
-    return true;
-  }
-  return doc;
 }
 
 function checkUser(user, doc) {

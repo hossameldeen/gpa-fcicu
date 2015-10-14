@@ -1,0 +1,6 @@
+- Update the class diagram and stuff.
+- move to safe parsing
+- add
+  if ((this instanceof Logout) === false)
+    return new Logout(); to almost all classes
+- add timeout to xhr

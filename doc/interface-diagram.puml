@@ -4,6 +4,7 @@
 ' example: I won't really create a class called Request, I'll just use objects.
 ' Also, may not resemble exactly the class diagram.
 @startuml
+  title Interface Diagram. Doesn't have to represent actual truth!
   Request <|-- GETRequest
   Request <|-- POSTRequest
   RequestRunner --> "0..*" Request : at any times contains
@@ -21,8 +22,6 @@
   interface RequestRunner {
     +RequestRunner(delay:Number)
     +void setDelay(delay:Number)
-    +void start()
-    +void pause()
     +void emptyQueue()
     +void addRequestToQueue(request:Request)
   }

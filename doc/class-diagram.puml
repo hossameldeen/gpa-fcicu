@@ -3,6 +3,7 @@
 ' example: I won't really create a class called Request, I'll just use objects.
 ' Also, not reviewed yet.
 @startuml
+  title Class Diagram. Doesn't have to represent actual truth!
   Request <|-- GETRequest
   Request <|-- POSTRequest
   RequestRunner --> "0..*" Request : at any times contains
@@ -12,6 +13,9 @@
   Phase <|-- Login
   Phase <|-- GetYears
   Phase <|-- ScrapeGrades
+  Logout ..> Login : prepares data for
+  Login ..> GetYears : prepares data for
+  GetYears ..> ScrapeGrades : prepares data for
   abstract class Request {
     +url:String
     +handler:Function
@@ -28,8 +32,6 @@
     #interval:Interval
     +RequestRunner(delay:Number)
     +void changeDelay(delay:Number)
-    +void start()
-    +void pause()
     +void emptyQueue()
     +void addRequestToQueue(request:Request)
     #applyRequest(request:Request)
@@ -94,7 +96,7 @@
   }
   note top of PhaseRunner : PhaseRunner is a Singleton. No impl. details here.
   class Result {
-    +err:String[]
+    +err:Error[]
     +user:String, for checking on most pages
   }
   class Utilities {
