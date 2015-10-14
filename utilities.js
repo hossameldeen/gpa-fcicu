@@ -10,9 +10,10 @@ function sendGET(url, handler, infoForHandler) {
 function sendPOST(url, paramObject, handler, infoForHandler) {
   var xhr = initReq(url, handler, infoForHandler);
   var paramString = '';
-  var isFirst = true;
+  var addAnd = false;
   for (var key in paramObject) {
-    if (isFirst) {isFirst = false; paramString += '&'}
+    if (addAnd) paramString += '&';
+    addAnd = true;
     paramString += key + '=' + paramObject[key];
   }
   xhr['paramObject'] = paramObject;
@@ -31,7 +32,7 @@ function initReq(url, handler, infoForHandler) {
 }
 
 // Not a generic curry!
-function curryOneParam(fn, param) {
+function curryXHR(fn, param) {
   return function() {fn(param)};
 }
 
@@ -46,11 +47,9 @@ function handlerBase(xhr) {
   if (xhr.readyState != 4)
     return true;
   var doc = parseHTML(xhr.responseText);
-  var state = checkUser(user, doc);
-  if (state !== true) {
-    result.err.push(state);
+  var state = checkUser(xhr.info.user, doc);
+  if (state !== true)
     return true;
-  }
   return doc;
 }
 
@@ -65,7 +64,7 @@ function checkUser(user, doc) {
     + "either the page didn't load correctly (because of, for example, the sit"
     + "e is down), or the ecom changed its page structure.";
   }
-  if (' ' + user != foundUser)
+  if (' ' + user !== foundUser)
     return "During scraping, the student ID on one of the pages didn't match "
     + "the ID we're calculating the GPA for. You may have logged into another "
     + "account during scraping. Another possibility is that scraping took long"

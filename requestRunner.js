@@ -7,6 +7,10 @@ And if it's 'POST', there's one more param which is 'paramObject'Oobject
 function RequestRunner(delayParam) {
   if ((this instanceof RequestRunner) === false)
     return new RequestRunner(delayParam);
+  var that = this,
+      delay = delayParam,
+      requestQ = [],
+      interval = null;
   this.changeDelay = function(delayParam) {
     delay = delayParam;
     clearInterval(interval);
@@ -20,10 +24,6 @@ function RequestRunner(delayParam) {
     if (interval === null)
       interval = setInterval(applyRequest, delay);
   }
-  var that = this,
-      delay = delayParam,
-      requestQ = [],
-      interval = null;
   function applyRequest() {
     if (requestQ.length == 0) {
       that.emptyQueue();
@@ -37,7 +37,7 @@ function RequestRunner(delayParam) {
     if (req.fn === 'GET')
       sendGET(req.url, req.handler, req.infoForHandler);
     else if (req.fn === 'POST')
-      sendGET(req.url, req.paramObject, req.handler, req.infoForHandler);
+      sendPOST(req.url, req.paramObject, req.handler, req.infoForHandler);
     else
       throw Error('requestQ[0].fn is neither GET nor POST.<br/>'
                 + 'requestQ[0].fn = ' + req.fn);

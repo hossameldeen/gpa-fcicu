@@ -1,7 +1,8 @@
+var scraper = new Scraper();
+
 function startCalculating() {
   document.getElementById('GPA').innerHTML = "";
-  document.getElementById('GPA').innerHTML = "Loading...";
-  scrape
+  scraper.start
     ( document.getElementById('user').value
     , document.getElementById('pass').value
     , function(result) {
@@ -10,11 +11,13 @@ function startCalculating() {
           document.getElementById('GPA').innerHTML
             = "<span>Failed! Contact hossameldeenfci@gmail.com</span><br/>"
             + "<span>Errors, probably not meaningful to you:</span><br/>";
-          console.log(err);
         }
         else
           document.getElementById('GPA').innerHTML
             = "<span>GPA = " + calculateGPAFromResult(result) + "!</span>";
+      }
+    , function() {
+        document.getElementById('GPA').innerHTML = "Loading...";
       }
     );
 }
@@ -25,7 +28,7 @@ var points = {'A+': 4.0, 'A': 3.7, 'B+': 3.3, 'B': 3.0, 'C+': 2.7, 'C': 2.4,
 function calculateGPAFromResult(result) {
   var grades = {}; // You could fail a course, then take it again.
   for (var key in result.gradeTables) {
-    var arr = result[key];
+    var arr = result.gradeTables[key];
     for (var i = 0; i < 3; ++i) {
       if (typeof arr[i] === 'undefined')
         continue;

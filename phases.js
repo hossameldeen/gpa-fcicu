@@ -7,11 +7,11 @@ phases[ind](prevResult, callback)
 
 
 function logout(prevResult, callback) {
-  console.log('called logout');
   requestRunner.addRequestToQueue({
     'fn': 'GET',
     'url': 'http://my.fci.cu.edu.eg/logout.php',
-    'handler': handler
+    'handler': handler,
+    'infoForHandler': {'user': prevResult.user}
   });
   function handler(xhr) {
     if (xhr.readyState != 4)
@@ -22,7 +22,6 @@ function logout(prevResult, callback) {
 
 
 function login(prevResult, callback) {
-  console.log('called login');
   requestRunner.addRequestToQueue({
     'fn': 'POST',
     'url': 'http://my.fci.cu.edu.eg/index.php',
@@ -32,7 +31,8 @@ function login(prevResult, callback) {
       'user': prevResult.user,
       'pass': prevResult.pass,
       'login': 'Login'
-    }
+    },
+    'infoForHandler': {'user': prevResult.user}
   });
   var result = {'err': [], 'user': prevResult.user};
   function handler(xhr) {
@@ -47,15 +47,14 @@ function login(prevResult, callback) {
 
 
 function getYears(prevResult, callback) {
-  console.log('called getYears');
   var baseLink = 'http://my.fci.cu.edu.eg/content.php?pg=studgroup_term';
   var terms = [baseLink + '1.php', baseLink + '2.php', baseLink + '3_m.php'];
   for (var i = 0; i < terms.length; ++i)
-    requestRunner.addRequestToQueue.({
+    requestRunner.addRequestToQueue({
       'fn': 'GET',
       'url': terms[i],
       'handler': handler,
-      'infoForHandler': {'termIndex': i}
+      'infoForHandler': {'termIndex': i, 'user': prevResult.user}
     });
   var termsCount = 0; // -1 if error happened & already called callback
   var result = {'err': [], 'user': prevResult.user, 'years': [[], [], []]};
@@ -91,16 +90,16 @@ function getYears(prevResult, callback) {
 
 
 function scrapeGrades(prevResult, callback) {
-  console.log('called scrapeGrades');
   var baseLink = 'http://my.fci.cu.edu.eg/content.php?pg=studgroup_term';
   var terms = [baseLink + '1.php', baseLink + '2.php', baseLink + '3_m.php'];
   for (var i = 0; i < terms.length; ++i)
     for (var j = 0; j < prevResult.years[i].length; ++j)
-      requestRunner.addRequestToQueue.({
+      requestRunner.addRequestToQueue({
         'fn': 'POST',
         'url': terms[i],
         'handler': handler,
-        'infoForHandler': {'termIndex': i, 'year': prevResult.years[i][j]},
+        'infoForHandler': {'termIndex': i, 'year': prevResult.years[i][j],
+                           'user': prevResult.user},
         'paramObject': {'prev_years': prevResult.years[i][j]}
       });
   var doneCnt = [0, 0, 0];
@@ -113,7 +112,7 @@ function scrapeGrades(prevResult, callback) {
       return;
     var doc = handlerBase(xhr);
     if (doc === true) {
-      result.err.push(Error(doc));
+      result.err.push(Error("Couldn't find "));
       errorHappened = true;
       callback(result);
       return;
