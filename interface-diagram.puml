@@ -2,6 +2,7 @@
 ' Interface diagram: i.e., a class diagram with only interfaces. My notation xD
 ' Please note that this is a conceptual model, implementation may differ. For
 ' example: I won't really create a class called Request, I'll just use objects.
+' Also, may not resemble exactly the class diagram.
 @startuml
   Request <|-- GETRequest
   Request <|-- POSTRequest

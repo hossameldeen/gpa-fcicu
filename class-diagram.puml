@@ -8,6 +8,10 @@
   RequestRunner --> "0..*" Request : at any times contains
   PhaseRunner --> "0..*" Phase : has
   Phase --> PhaseState : has
+  Phase <|-- Logout
+  Phase <|-- Login
+  Phase <|-- GetYears
+  Phase <|-- ScrapeGrades
   abstract class Request {
     +url:String
     +handler:Function
@@ -32,13 +36,45 @@
   }
   abstract class Phase {
     #prevResult:Result
-    #callback:Function(Result)
+' Should be Function(Result) but PlantUML would consider it a function
+    #callback:Function
     #state:PhaseState
     #result:Result
     +Phase(prevResult:Result)
     +setCallback(callback:Function(Result))
     +void start()
     #void finish()
+  }
+  class Logout {
+    ..Needs no data at all..
+    +Logout(prevResult:Result)
+    #logoutHandler(xhr)
+  }
+  note bottom of Logout : Only class that does the work even if err.length > 0.
+  class Login {
+    ..{user, pass}..
+    +Login(prevResult:Result)
+    #loginHandler(xhr)
+  }
+  class GetYears {
+    ..Assumes logged in..
+    ..{user}..
+    #termsCount:Int
+    #years:String Array[3][]
+    +GetYears(prevResult:Result)
+    #getYearsHandler(xhr)
+    ..result:years:String Array[3][]..
+    ..Example: [['12', '11'], [], ['10']]..
+  }
+  class ScrapeGrades {
+    ..Assumes logged in..
+    ..{user, years:String Array[3][]}..
+    #termsYearsCount:Int[3]
+    #doneTermsYearsCount:Int[3]
+    +ScrapeGrades(prevResult:Result)
+    #scrapeTermHandler(xhr)
+    ..result:{0..*String:Array[3] each either HTML Table or undefined}..
+    ..Example: {'12':[HT, undefined, HT], '10':[HT, HT, HT]}..
   }
   enum PhaseState {
     +NotStartedYet
@@ -59,6 +95,7 @@
   note top of PhaseRunner : PhaseRunner is a Singleton. No impl. details here.
   class Result {
     +err:String[]
+    +user:String, for checking on most pages
   }
   class Utilities {
     +void sendGET(url:String, handler:Function, infoForHandler:Object)
@@ -67,6 +104,7 @@
     +DOMObject parseHTML(anHTMLString:String)
     +Bool/String checkUser(user:String, doc:DOMObject)
     +Function curryOneParam(fn:Function, param:var)
+    +Bool/DOMObject handlerBase(xhr)
     #void initReq(url:String, handler:Function, infoForHandler:Object)
   }
 @enduml
