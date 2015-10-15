@@ -5,11 +5,12 @@ function PhaseRunner(phasesParam, someInputParam, callbackParam) {
       phases = phasesParam, someInput = someInputParam,
         callback = callbackParam,
       lastResult = {'err':[]}, curInd = -1,
-      stopCallback = null;
+      stopCallback = null, callCallback = true;
   callNext(someInput);
 
-  this.stopEarly = function(stopCallbackParam) {
+  this.stopEarly = function(stopCallbackParam, callCallbackParam) {
     stopCallback = stopCallbackParam;
+    callCallback = callCallbackParam;
     if (curInd === -1) {
       stopCallback();
       stopCallback = null;
@@ -19,7 +20,7 @@ function PhaseRunner(phasesParam, someInputParam, callbackParam) {
   function finish() {
     var tempCurInd = curInd;
     curInd = -1;
-    if (tempCurInd !== -1)
+    if (tempCurInd !== -1 && callCallback === true)
       callback(lastResult);
     if (stopCallback !== null) {
       var tempStopCallback = stopCallback;
