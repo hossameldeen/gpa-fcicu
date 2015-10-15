@@ -1,24 +1,25 @@
 function Scraper() {
   var phases = [logout, login, getYears, scrapeGrades, logout];
   var phaseRunner = null;
-  var user, pass, callback, callbackWhenPreviousStopped;
-  // NOTE: If I'm working, then you start me twice very fast such that I
-  // haven't already called the first callback, what'll happen is that I'll
-  // call the last `callback..`  only.
+  var user, pass, callback, callbackAfterLastStopped = null;
   this.start = function(userParam, passParam, callbackParam,
-                        callbackWhenPreviousStoppedParam, callOldCallback) {
+                        callbackAfterLastStoppedParam/*optional*/) {
     user = userParam; pass = passParam; callback = callbackParam;
-    callbackWhenPreviousStopped = callbackWhenPreviousStoppedParam;
+    callbackAfterLastStopped = callbackAfterLastStoppedParam;
     if (phaseRunner !== null)
-      phaseRunner.stopEarly(startActual, callOldCallback);
+      phaseRunner.stopEarly(startActual);
       // it's also okay to call if had already finished successfully
     else
-      startActual();
+      startActual(null);
   }
-  function startActual() {
-    callbackWhenPreviousStopped();
+  function startActual(result) {
+    if (!(typeof callbackAfterLastStopped === 'undefined' ||
+          callbackAfterLastStopped === null))
+      callbackAfterLastStopped();
+    // If interested, first print the result for debugging purposes.
     phaseRunner = new PhaseRunner(phases,
                                   {'err': [], 'user': user, 'pass': pass},
                                   callback);
+    callbackAfterLastStopped = undefined;
   }
 }

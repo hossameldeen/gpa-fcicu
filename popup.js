@@ -10,7 +10,8 @@ function startCalculating() {
         if (result.err.length > 0) {
           document.getElementById('GPA').innerHTML
             = "<span>Failed! Contact hossameldeenfci@gmail.com</span><br/>"
-            + "<span>Errors, probably not meaningful to you:</span><br/>";
+            + "<span>For the extension dev: check the console.</span><br/>";
+          console.log(result);
         }
         else
           document.getElementById('GPA').innerHTML
@@ -19,7 +20,6 @@ function startCalculating() {
     , function() {
         document.getElementById('GPA').innerHTML = "Loading...";
       }
-    , false
     );
 }
 

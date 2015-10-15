@@ -5,36 +5,29 @@ function PhaseRunner(phasesParam, someInputParam, callbackParam) {
       phases = phasesParam, someInput = someInputParam,
         callback = callbackParam,
       lastResult = {'err':[]}, curInd = -1,
-      stopCallback = null, callCallback = true;
+      receivedStopSignal = false;
   callNext(someInput);
 
-  // NOTE: If called stopEarly consecutive times and a previous one hadn't
-  // stopped yet, what will happen is that we'll call the very last one only
-  this.stopEarly = function(stopCallbackParam, callCallbackParam) {
-    stopCallback = stopCallbackParam;
-    callCallback = callCallbackParam;
-    if (curInd === -1) {
-      stopCallback();
-      stopCallback = null;
-    }
+  // Overrides the old callback
+  this.stopEarly = function(newCallback) {
+    receivedStopSignal = true;
+    callback = newCallback;
+    if (curInd === -1)
+      callback(lastResult);
+    lastResult.err.push(Error('Stopped early!'));
     // else wait for next callNext to call stopCallback
   }
   function finish() {
-    var tempCurInd = curInd;
     curInd = -1;
-    if (tempCurInd !== -1 && callCallback === true)
-      callback(lastResult);
-    if (stopCallback !== null) {
-      var tempStopCallback = stopCallback;
-      stopCallback = null;
-      tempStopCallback();
-    }
+    callback(lastResult);
   }
   function callNext(result) {
+    if (receivedStopSignal) {
+      finish();
+      return;
+    }
     lastResult = result;
-    if (lastResult.err.length > 0 || stopCallback !== null) {
-      if (stopCallback !== null)
-        lastResult.err.push('Stopped early!');
+    if (lastResult.err.length > 0) {
       finish();
       return;
     }
