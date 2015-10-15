@@ -1,4 +1,8 @@
-function Scraper() {
+// Also, a singleton!
+function ScraperSingleton() {
+  if ((this instanceof ScraperSingleton) === false)
+    throw Error("Use the created instace `scraper`. Yes, it's not so "
+                     + "clean");
   var phases = [logout, login, getYears, scrapeGrades, logout];
   var phaseRunner = null;
   var user, pass, callback, callbackAfterLastStopped = null;
@@ -23,3 +27,5 @@ function Scraper() {
     callbackAfterLastStopped = undefined;
   }
 }
+
+var scraper = new ScraperSingleton();

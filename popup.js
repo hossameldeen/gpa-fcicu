@@ -1,5 +1,3 @@
-var scraper = new Scraper();
-
 function startCalculating() {
   document.getElementById('GPA').innerHTML = "";
   scraper.start

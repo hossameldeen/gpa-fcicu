@@ -4,9 +4,9 @@ So, request final structure:
  'infoForHandler':Object}
 And if it's 'POST', there's one more param which is 'paramObject'Oobject
 */
-function RequestRunner(delayParam) {
-  if ((this instanceof RequestRunner) === false)
-    return new RequestRunner(delayParam);
+function RequestRunnerSingleton(delayParam) {
+  if ((this instanceof RequestRunnerSingleton) === false)
+    throw Error("Use the created instace `rr`. Yes, it's not so clean");
   var that = this,
       delay = delayParam,
       requestQ = [],
@@ -44,4 +44,4 @@ function RequestRunner(delayParam) {
   }
 }
 
-var requestRunner = new RequestRunner(1000);
+var requestRunner = new RequestRunnerSingleton(1000);
