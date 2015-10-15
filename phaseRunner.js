@@ -8,6 +8,8 @@ function PhaseRunner(phasesParam, someInputParam, callbackParam) {
       stopCallback = null, callCallback = true;
   callNext(someInput);
 
+  // NOTE: If called stopEarly consecutive times and a previous one hadn't
+  // stopped yet, what will happen is that we'll call the very last one only
   this.stopEarly = function(stopCallbackParam, callCallbackParam) {
     stopCallback = stopCallbackParam;
     callCallback = callCallbackParam;

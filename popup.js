@@ -19,6 +19,7 @@ function startCalculating() {
     , function() {
         document.getElementById('GPA').innerHTML = "Loading...";
       }
+    , false
     );
 }
 
