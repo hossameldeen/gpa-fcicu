@@ -5,8 +5,6 @@ So, request final structure:
 And if it's 'POST', there's one more param which is 'paramObject'Oobject
 */
 function RequestRunnerSingleton(delayParam) {
-  if ((this instanceof RequestRunnerSingleton) === false)
-    throw Error("Use the created instace `rr`. Yes, it's not so clean");
   var that = this,
       delay = delayParam,
       requestQ = [],

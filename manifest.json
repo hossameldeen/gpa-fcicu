@@ -5,13 +5,26 @@
   "version": "1.0.0",
   "browser_action": {
     "default_title": "GPA Calculator",
-    "default_popup": "popup.html"
+    "default_popup": "frontend/popup.html"
   },
   "permissions": [
     "http://*.my.fci.cu.edu.eg/*"
   ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "background": {
+    "scripts": [
+      "backend/utilities.js",
+      "backend/requestRunner.js",
+      "backend/phaseRunner.js",
+      "backend/phases.js",
+      "backend/scraper.js",
+      "backend/GPACalculator.js",
+      "backend/listener.js"
+    ],
+    "persistent": false
+  },
 
-  "author": "Hossam",
+  "author": "Hossam El-Deen",
 
   "manifest_version": 2
 }

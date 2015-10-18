@@ -1,6 +1,4 @@
 function PhaseRunner(phasesParam, someInputParam, callbackParam) {
-  if ((this instanceof PhaseRunner) === false)
-    return new PhaseRunner(phasesParam, someInputParam, callbackParam);
   var that = this,
       phases = phasesParam, someInput = someInputParam,
         callback = callbackParam,
