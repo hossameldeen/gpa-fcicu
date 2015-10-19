@@ -37,9 +37,9 @@ function curryXHR(fn, param) {
 }
 
 // Remember to turn this into a safe parsing!
-function parseHTML(aHTMLString){
-  if (typeof aHTMLString !== 'undefined' && aHTMLString !== null)
-    return (new DOMParser()).parseFromString(aHTMLString, "text/html");
+function parseHTML(anHTMLString){
+  if (typeof anHTMLString !== 'undefined' && anHTMLString !== null)
+    return (new DOMParser()).parseFromString(anHTMLString, "text/html");
   return (new DOMParser()).parseFromString('', "text/html");
 }
 

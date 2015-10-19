@@ -4,11 +4,8 @@
 ' Also, not reviewed yet.
 @startuml
   title Class Diagram. Doesn't have to represent actual truth!
-  Request <|-- GETRequest
-  Request <|-- POSTRequest
-  RequestRunner --> "0..*" Request : at any times contains
+  RequestRunnerSingleton --> "0..*" Request : at any times contains
   PhaseRunner --> "0..*" Phase : has
-  Phase --> PhaseState : has
   Phase <|-- Logout
   Phase <|-- Login
   Phase <|-- GetYears
@@ -16,36 +13,29 @@
   Logout ..> Login : prepares data for
   Login ..> GetYears : prepares data for
   GetYears ..> ScrapeGrades : prepares data for
-  abstract class Request {
+  Phase --> "1" RequestRunnerSingleton : uses
+  ScraperSingleton --> "1" PhaseRunner : uses
+  RequestRunnerSingleton ..> Utilities : uses some of
+  Phase ..> Utilities : uses some of
+  class Request {
+    ..Either 'GET' or 'POST'..
+    +fn:String
     +url:String
     +handler:Function
     +infoForHandler:String
   }
-  class GETRequest {
-  }
-  class POSTRequest {
-    +nameValuePairs:Array[pairsCount][2]
-  }
-  class RequestRunner {
+  class RequestRunnerSingleton {
     #delay:Number
     #requestQ:Request[]
     #interval:Interval
-    +RequestRunner(delay:Number)
+    +RequestRunnerSingleton(delay:Number)
     +void changeDelay(delay:Number)
     +void emptyQueue()
     +void addRequestToQueue(request:Request)
     #applyRequest(request:Request)
   }
   abstract class Phase {
-    #prevResult:Result
-' Should be Function(Result) but PlantUML would consider it a function
-    #callback:Function
-    #state:PhaseState
-    #result:Result
-    +Phase(prevResult:Result)
-    +setCallback(callback:Function(Result))
-    +void start()
-    #void finish()
+    +Phase(prevResult:Result, callback:Function(Result))
   }
   class Logout {
     ..Needs no data at all..
@@ -78,26 +68,40 @@
     ..result:{0..*String:Array[3] each either HTML Table or undefined}..
     ..Example: {'12':[HT, undefined, HT], '10':[HT, HT, HT]}..
   }
-  enum PhaseState {
-    +NotStartedYet
-    +Done
-  }
   class PhaseRunner {
     #phases:Phase[]
     #someInput:Result
 ' Should be Function(Result) but PlantUML would consider it a function
     #callback:Function
+    #lastResult:Result
     #currentIndex:Int
+    #receivedStopSignal:Bool
     +PhaseRunner(phases:Phase[], someInput:Result, callback:Function(Result))
-    +void start()
-    +void stopAndCallCallback()
-' Will be curried with index
-    #phaseCallback(index, Result)
+    ..Updates callback and calls it when stopped..
+    ..i.e., doesnt call the one it was constructed with..
+    +void stopEarly(newCallback:Function(result))
+    #finish()
+    ..This is the callback of each Phase..
+    #callNext(Result)
   }
-  note top of PhaseRunner : PhaseRunner is a Singleton. No impl. details here.
+  note right of PhaseRunner
+    You shouldnt have 2 instances running at the same time.
+    Also, an instance can be used once only (Obvious from how the code is).
+  end note
+  class ScraperSingleton {
+    #phases:phases[]
+    #phaseRunner:PhaseRunner
+    #user:String
+    #pass:String
+    #callback:Function that takes nothing
+    #callbackAfterLastStopped: Function that takes a Result
+    +start(user, pass, callback, callbackAfterLastStopped/*optional*/)
+    #startActual:Function(Result)
+  }
   class Result {
     +err:Error[]
     +user:String, for checking on most pages
+    +otherEntries
   }
   class Utilities {
     +void sendGET(url:String, handler:Function, infoForHandler:Object)

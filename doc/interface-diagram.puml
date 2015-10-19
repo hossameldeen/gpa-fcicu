@@ -7,6 +7,8 @@
   title Interface Diagram. Doesn't have to represent actual truth!
   RequestRunnerSingleton --> "0..*" Request : at any times contains
   PhaseRunner --> "0..*" Phase : has
+  Phase --> "1" RequestRunnerSingleton : uses
+  ScraperSingleton --> "1" PhaseRunner : uses
   class Request {
     ..Either 'GET' or 'POST'..
     +fn:String
@@ -27,7 +29,7 @@
     .But don.
     +Phase(prevResult:Result, callback:Function(Result))
   }
-  note bottom of Phase
+  note right of Phase
     Every Phase is actually a function, not a class.
     So, for example, to create a PhaseRunner with some Phases:
     new PhaseRunner([logout, login..]) where `logout` and `login` are Phase
@@ -37,6 +39,9 @@
     +PhaseRunner(phases:Phase[], someInput:Result, callback:Function(Result))
     ..Updates callback and calls it when stopped..
     +void stopEarly(newCallback:Function(result))
+  }
+  interface ScraperSingleton {
+    +start(user, pass, callback, callbackAfterLastStopped/*optional*/)
   }
   interface Result {
     +err:String[]
