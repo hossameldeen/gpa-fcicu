@@ -5,34 +5,38 @@
 ' Also, may not resemble exactly the class diagram.
 @startuml
   title Interface Diagram. Doesn't have to represent actual truth!
-  Request <|-- GETRequest
-  Request <|-- POSTRequest
-  RequestRunner --> "0..*" Request : at any times contains
+  RequestRunnerSingleton --> "0..*" Request : at any times contains
   PhaseRunner --> "0..*" Phase : has
   class Request {
+    ..Either 'GET' or 'POST'..
+    +fn:String
     +url:String
     +handler:Function
     +infoForHandler:String
   }
-  class GETRequest {
-  }
-  class POSTRequest {
-    +nameValuePairs:Array[pairsCount][2]
-  }
-  interface RequestRunner {
-    +RequestRunner(delay:Number)
-    +void setDelay(delay:Number)
+  interface RequestRunnerSingleton {
+    +RequestRunnerSingleton(delay:Number)
+    +void changeDelay(delay:Number)
     +void emptyQueue()
     +void addRequestToQueue(request:Request)
   }
   interface Phase {
+    ..Every Phase is a function NOT a class. i.e., example:..
+    ..new PhaseRunner([logout, login,..])..
+    ..i.e., you dont create a phase object..
+    .But don.
     +Phase(prevResult:Result, callback:Function(Result))
-    +void start()
   }
+  note bottom of Phase
+    Every Phase is actually a function, not a class.
+    So, for example, to create a PhaseRunner with some Phases:
+    new PhaseRunner([logout, login..]) where `logout` and `login` are Phase
+    names NOT variables that hold instances of them.
+  end note
   interface PhaseRunner {
     +PhaseRunner(phases:Phase[], someInput:Result, callback:Function(Result))
-    +void start()
-    +void stopAndCallCallback()
+    ..Updates callback and calls it when stopped..
+    +void stopEarly(newCallback:Function(result))
   }
   interface Result {
     +err:String[]
