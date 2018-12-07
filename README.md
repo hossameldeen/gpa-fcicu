@@ -1,3 +1,5 @@
+**This repository has been archived. For any communication regarding it, including the possibility of unarchiving or making updates to it, feel free to open an issue on [archived-repos](https://github.com/hossameldeen/archived-repos).** I don't remember the final state before archiving, but I don't expect it to be working now anyway.
+
 # GPA scraper and calculator for FCI-CU
 Chrome extension to scrape an FCI-CU student's ecom account and calculate their GPA from its data.
 
